@@ -1,11 +1,9 @@
 package br.com.caelum.fj59.carangos.tasks;
 
 import android.os.AsyncTask;
-import android.widget.Toast;
 
 import java.util.List;
 
-import br.com.caelum.fj59.carangos.activity.MainActivity;
 import br.com.caelum.fj59.carangos.converter.PublicacaoConverter;
 import br.com.caelum.fj59.carangos.infra.MyLog;
 import br.com.caelum.fj59.carangos.modelo.Publicacao;
@@ -18,10 +16,12 @@ import br.com.caelum.fj59.carangos.webservice.WebClient;
 public class BuscaMaisPublicacoesTask extends AsyncTask<Pagina, Void, List<Publicacao>> {
 
     private Exception erro;
-    private MainActivity activity;
+    //private MainActivity activity;
+    private BuscaMaisPublicacoesDelegate delegate;
 
-    public BuscaMaisPublicacoesTask(MainActivity activity) {
-        this.activity = activity;
+    public BuscaMaisPublicacoesTask(BuscaMaisPublicacoesDelegate delegate) {
+        this.delegate = delegate;
+        this.delegate.getCarangosApplication().registra(this);
     }
 
     @Override
@@ -29,6 +29,7 @@ public class BuscaMaisPublicacoesTask extends AsyncTask<Pagina, Void, List<Publi
         try {
             Pagina paginaParaBuscar = paginas.length > 1? paginas[0] : new Pagina();
 
+            Thread.sleep(2000);
             String jsonDeResposta = new WebClient("post/list?" + paginaParaBuscar).get();
 
             List<Publicacao> publicacoesRecebidas = new PublicacaoConverter().converte(jsonDeResposta);
@@ -45,9 +46,10 @@ public class BuscaMaisPublicacoesTask extends AsyncTask<Pagina, Void, List<Publi
         MyLog.i("RETORNO OBTIDO!" + retorno);
 
         if (retorno!=null) {
-            this.activity.atualizaListaCom(retorno);
+            this.delegate.lidaComRetorno(retorno);
         } else {
-            Toast.makeText(this.activity, "Erro na busca dos dados", Toast.LENGTH_SHORT).show();
+            this.delegate.lidaComErro(this.erro);
         }
+        delegate.getCarangosApplication().desregistra(this);
     }
 }
