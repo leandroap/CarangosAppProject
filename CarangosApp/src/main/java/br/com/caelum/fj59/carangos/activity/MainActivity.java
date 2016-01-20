@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 import br.com.caelum.fj59.carangos.R;
 import br.com.caelum.fj59.carangos.app.CarangosApplication;
+import br.com.caelum.fj59.carangos.evento.EventoPublicacoesRecebidas;
 import br.com.caelum.fj59.carangos.infra.MyLog;
 import br.com.caelum.fj59.carangos.modelo.Publicacao;
 import br.com.caelum.fj59.carangos.navegacao.EstadoMainActivity;
@@ -21,6 +22,7 @@ public class MainActivity extends ActionBarActivity implements BuscaMaisPublicac
     private EstadoMainActivity estado;
     private static final String ESTADO_ATUAL = "ESTADO_ATUAL";
 
+    private EventoPublicacoesRecebidas evento;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,10 +33,13 @@ public class MainActivity extends ActionBarActivity implements BuscaMaisPublicac
         this.publicacoesArray = new ArrayList<Publicacao>();
 
         this.estado = EstadoMainActivity.INICIO;
+
+        //Registrando activuty como observador
+        this.evento = EventoPublicacoesRecebidas.registrarObservador(this);
     }
 
     public void buscaPublicacoes() {
-        new BuscaMaisPublicacoesTask(this).execute();
+        new BuscaMaisPublicacoesTask(getCarangosApplication()).execute();
     }
 
     public void alteraEstadoEEceuta(EstadoMainActivity estado){
@@ -97,7 +102,7 @@ public class MainActivity extends ActionBarActivity implements BuscaMaisPublicac
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
+        this.evento.desregistra(getCarangosApplication());
     }
 
     @Override
