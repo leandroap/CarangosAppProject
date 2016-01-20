@@ -10,6 +10,7 @@ import android.widget.ListView;
 import br.com.caelum.fj59.carangos.R;
 import br.com.caelum.fj59.carangos.activity.MainActivity;
 import br.com.caelum.fj59.carangos.adapter.PublicacaoAdapter;
+import br.com.caelum.fj59.carangos.app.CarangosApplication;
 
 /**
  * Created by erich on 9/11/13.
@@ -22,7 +23,9 @@ public class ListaDePublicacoesFragment extends Fragment {
 
         final MainActivity activity = (MainActivity) this.getActivity();
 
-        PublicacaoAdapter adapter = new PublicacaoAdapter(getActivity(), activity.getPublicacoes());
+        CarangosApplication application = activity.getCarangosApplication();
+
+        PublicacaoAdapter adapter = new PublicacaoAdapter(getActivity(), activity.getPublicacoesArray());
         publicacoesList.setAdapter(adapter);
 
         return publicacoesList;

@@ -6,43 +6,80 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import br.com.caelum.fj59.carangos.R;
-import br.com.caelum.fj59.carangos.adapter.PublicacaoAdapter;
 import br.com.caelum.fj59.carangos.app.CarangosApplication;
+import br.com.caelum.fj59.carangos.infra.MyLog;
 import br.com.caelum.fj59.carangos.modelo.Publicacao;
+import br.com.caelum.fj59.carangos.navegacao.EstadoMainActivity;
 import br.com.caelum.fj59.carangos.tasks.BuscaMaisPublicacoesDelegate;
 import br.com.caelum.fj59.carangos.tasks.BuscaMaisPublicacoesTask;
 
 public class MainActivity extends ActionBarActivity implements BuscaMaisPublicacoesDelegate {
     private ListView listView;
-    private List<Publicacao> publicacoes;
-    private PublicacaoAdapter adapter;
+    private ArrayList<Publicacao> publicacoesArray;
+    private EstadoMainActivity estado;
+    private static final String ESTADO_ATUAL = "ESTADO_ATUAL";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.publicacoes_list);
+        setContentView(R.layout.main);
 
         this.listView = (ListView) findViewById(R.id.publicacoes_list);
-        this.publicacoes = new ArrayList<Publicacao>();
-        this.adapter = new PublicacaoAdapter(this, this.publicacoes);
+        this.publicacoesArray = new ArrayList<Publicacao>();
 
-        this.listView.setAdapter(adapter);
+        this.estado = EstadoMainActivity.INICIO;
+    }
 
+    public void buscaPublicacoes() {
         new BuscaMaisPublicacoesTask(this).execute();
     }
 
-    public List<Publicacao> getPublicacoes() {
-        return this.publicacoes;
+    public void alteraEstadoEEceuta(EstadoMainActivity estado){
+        this.estado = estado;
+        this.estado.executa(this);
+    }
+
+    public ArrayList<Publicacao> getPublicacoesArray() {
+        return publicacoesArray;
     }
 
     @Override
-    public void lidaComRetorno(List<Publicacao> retorno) {
-        this.publicacoes.clear();
-        this.publicacoes.addAll(retorno);
-        this.adapter.notifyDataSetChanged();
+    protected void onResume() {
+        super.onResume();
+        MyLog.i("EXECUTANDO ESTADO " + this.estado);
+        this.estado.executa(this);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        MyLog.i("SALVANDO ESTADO!");
+        outState.putSerializable("LISTA", this.publicacoesArray);
+        outState.putSerializable(ESTADO_ATUAL, this.estado);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        MyLog.i("RESTAURANDO ESTADO!");
+        this.estado = (EstadoMainActivity) savedInstanceState.getSerializable(ESTADO_ATUAL);
+        this.publicacoesArray = (ArrayList<Publicacao>) savedInstanceState.getSerializable("LISTA");
+    }
+
+    @Override
+    public void lidaComRetorno(ArrayList<Publicacao> retorno) {
+        CarangosApplication application = (CarangosApplication) getApplication();
+        //List<Publicacao> publicacoes = application.getPublicacoes();
+        //this.publicacoesArray = retorno;
+
+        this.publicacoesArray.clear();
+        this.publicacoesArray.addAll(retorno);
+
+        this.estado = EstadoMainActivity.PRIMEIRAS_PUBLICACOES_RECEBIDAS;
+        this.estado.executa(this);
     }
 
     @Override
