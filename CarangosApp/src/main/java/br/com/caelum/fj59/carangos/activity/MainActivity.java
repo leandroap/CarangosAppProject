@@ -28,10 +28,9 @@ public class MainActivity extends ActionBarActivity implements BuscaMaisPublicac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-
         this.listView = (ListView) findViewById(R.id.publicacoes_list);
-        this.publicacoesArray = new ArrayList<Publicacao>();
 
+        this.publicacoesArray = new ArrayList<>();
         this.estado = EstadoMainActivity.INICIO;
 
         //Registrando activuty como observador
@@ -76,7 +75,7 @@ public class MainActivity extends ActionBarActivity implements BuscaMaisPublicac
 
     @Override
     public void lidaComRetorno(ArrayList<Publicacao> retorno) {
-        CarangosApplication application = (CarangosApplication) getApplication();
+        //CarangosApplication application = (CarangosApplication) getApplication();
         //List<Publicacao> publicacoes = application.getPublicacoes();
         //this.publicacoesArray = retorno;
 

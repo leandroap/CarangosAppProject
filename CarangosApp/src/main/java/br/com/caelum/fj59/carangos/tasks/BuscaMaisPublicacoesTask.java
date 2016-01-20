@@ -13,19 +13,16 @@ import br.com.caelum.fj59.carangos.modelo.Publicacao;
 import br.com.caelum.fj59.carangos.webservice.Pagina;
 import br.com.caelum.fj59.carangos.webservice.WebClient;
 
-/**
- * Created by erich on 7/16/13.
- */
 public class BuscaMaisPublicacoesTask extends AsyncTask<Pagina, Void, ArrayList<Publicacao>> {
 
     private Exception erro;
-    private BuscaMaisPublicacoesDelegate delegate;
+    //private BuscaMaisPublicacoesDelegate delegate;
     private CarangosApplication application;
 
-    public BuscaMaisPublicacoesTask(BuscaMaisPublicacoesDelegate delegate) {
+    /*public BuscaMaisPublicacoesTask(BuscaMaisPublicacoesDelegate delegate) {
         this.delegate = delegate;
         this.delegate.getCarangosApplication().registra(this);
-    }
+    }*/
 
     public BuscaMaisPublicacoesTask(CarangosApplication application) {
         this.application = application;
@@ -55,10 +52,12 @@ public class BuscaMaisPublicacoesTask extends AsyncTask<Pagina, Void, ArrayList<
 
         if (retorno!=null) {
             //this.delegate.lidaComRetorno(retorno);
-            EventoPublicacoesRecebidas.notifica(this.application, (Serializable) retorno, true);
+            EventoPublicacoesRecebidas
+                    .notifica(this.application, (Serializable) retorno, true);
         } else {
             //this.delegate.lidaComErro(this.erro);
-            EventoPublicacoesRecebidas.notifica(this.application, erro, false);
+            EventoPublicacoesRecebidas
+                    .notifica(this.application, erro, false);
         }
         this.application.desregistra(this);
     }
