@@ -18,9 +18,9 @@ import br.com.caelum.fj59.carangos.tasks.BuscaMaisPublicacoesTask;
 
 public class MainActivity extends ActionBarActivity implements BuscaMaisPublicacoesDelegate {
     private ListView listView;
-    private ArrayList<Publicacao> publicacoesArray;
     private EstadoMainActivity estado;
     private static final String ESTADO_ATUAL = "ESTADO_ATUAL";
+    private ArrayList<Publicacao> publicacoes;
 
     private EventoPublicacoesRecebidas evento;
 
@@ -30,7 +30,8 @@ public class MainActivity extends ActionBarActivity implements BuscaMaisPublicac
         setContentView(R.layout.main);
         this.listView = (ListView) findViewById(R.id.publicacoes_list);
 
-        this.publicacoesArray = new ArrayList<>();
+        CarangosApplication application = (CarangosApplication) getApplication();
+        this.publicacoes = application.getPublicacoes();
         this.estado = EstadoMainActivity.INICIO;
 
         //Registrando activuty como observador
@@ -46,10 +47,6 @@ public class MainActivity extends ActionBarActivity implements BuscaMaisPublicac
         this.estado.executa(this);
     }
 
-    public ArrayList<Publicacao> getPublicacoesArray() {
-        return publicacoesArray;
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -61,7 +58,7 @@ public class MainActivity extends ActionBarActivity implements BuscaMaisPublicac
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         MyLog.i("SALVANDO ESTADO!");
-        outState.putSerializable("LISTA", this.publicacoesArray);
+        outState.putSerializable("LISTA", this.publicacoes);
         outState.putSerializable(ESTADO_ATUAL, this.estado);
     }
 
@@ -70,17 +67,13 @@ public class MainActivity extends ActionBarActivity implements BuscaMaisPublicac
         super.onRestoreInstanceState(savedInstanceState);
         MyLog.i("RESTAURANDO ESTADO!");
         this.estado = (EstadoMainActivity) savedInstanceState.getSerializable(ESTADO_ATUAL);
-        this.publicacoesArray = (ArrayList<Publicacao>) savedInstanceState.getSerializable("LISTA");
+        this.publicacoes = (ArrayList<Publicacao>) savedInstanceState.getSerializable("LISTA");
     }
 
     @Override
     public void lidaComRetorno(ArrayList<Publicacao> retorno) {
-        //CarangosApplication application = (CarangosApplication) getApplication();
-        //List<Publicacao> publicacoes = application.getPublicacoes();
-        //this.publicacoesArray = retorno;
-
-        this.publicacoesArray.clear();
-        this.publicacoesArray.addAll(retorno);
+        this.publicacoes.clear();
+        this.publicacoes.addAll(retorno);
 
         this.estado = EstadoMainActivity.PRIMEIRAS_PUBLICACOES_RECEBIDAS;
         this.estado.executa(this);
@@ -88,7 +81,6 @@ public class MainActivity extends ActionBarActivity implements BuscaMaisPublicac
 
     @Override
     public void lidaComErro(Exception e) {
-
         e.printStackTrace();
         Toast.makeText(this, "Erro ao buscar dados", Toast.LENGTH_LONG).show();
     }

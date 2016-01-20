@@ -14,7 +14,7 @@ import br.com.caelum.fj59.carangos.modelo.Publicacao;
  */
 public class CarangosApplication extends Application {
     private List<AsyncTask<?,?,?>> tasks = new ArrayList<AsyncTask<?, ?, ?>>();
-    private List<Publicacao> publicacoes = new ArrayList<Publicacao>();
+    private ArrayList<Publicacao> publicacoes = new ArrayList<Publicacao>();
 
     public void cancela(){
         for (AsyncTask task : this.tasks){
@@ -32,7 +32,7 @@ public class CarangosApplication extends Application {
         tasks.remove(task);
     }
 
-    public List<Publicacao> getPublicacoes(){
+    public ArrayList<Publicacao> getPublicacoes(){
         return publicacoes;
     }
 }
